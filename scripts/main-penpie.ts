@@ -1,7 +1,7 @@
 import { BigNumber } from 'ethers';
 import { normalizeRawRC, queryAllPositions, RC } from './helper';
 import rawSwapDatas from './data/swap-result.json';
-import { uploadToS3, uploadCSVToDune, reward, arrayToCSVString, writeJson, arrayToCSV } from './helper-penpie';
+import { loadFromS3, uploadToS3, uploadCSVToDune, reward, arrayToCSVString, writeJson, arrayToCSV } from './helper-penpie';
 
 const WTIME_INF = 2 ** 31 - 1;
 const ACCOUNT = '0x6E799758CEE75DAe3d84e09D40dc416eCf713652'.toLowerCase();
@@ -71,21 +71,32 @@ async function main() {
     // writeJson({ sumReward: sumReward.toString(), sumBaseReward: sumBaseReward.toString(), rewards }, `${wTimeFrom}-${wTimeTo}.json`);
     // arrayToCSV(rewards, `${wTimeFrom}-${wTimeTo}.csv`);
 
-    // Export JSON to S3
-    const jsonData = { sumReward: sumReward.toString(), sumBaseReward: sumBaseReward.toString(), rewards };
-    await uploadToS3(
+    const existedData = await loadFromS3(
         "automa-data",
-        `bribe-reward-distribution/vePendleVotingRevenueShare/rewardData/${wTimeFrom}-${wTimeTo}.json`,
-        jsonData
+        `bribe-reward-distribution/vePendleVotingRevenueShare/rewardData/${wTimeFrom}-${wTimeTo}.json`
     );
 
-    // Export CSV to Dune
-    console.log(`Uploading data to Dune system with table name: vependle_fee_${wTimeFrom}_${wTimeTo}`);
-    if (await uploadCSVToDune(`vependle_fee_${wTimeFrom}_${wTimeTo}`, arrayToCSVString(rewards))) {
-        console.log('CSV uploaded to Dune successfully.');
-    }
-    else {
-        throw new Error('Failed to upload CSV to Dune.');
+    if (existedData !== null) {
+        console.log(`Data for week ${wTimeFrom}-${wTimeTo} already exists. Skipping upload.`);
+    } else {
+        // Export JSON to S3
+        const jsonData = { sumReward: sumReward.toString(), sumBaseReward: sumBaseReward.toString(), rewards };
+        await uploadToS3(
+            "automa-data",
+            `bribe-reward-distribution/vePendleVotingRevenueShare/rewardData/${wTimeFrom}-${wTimeTo}.json`,
+            jsonData
+        );
+
+        // Export CSV to Dune
+        console.log(`Uploading data to Dune system with table name: vependle_fee_${wTimeFrom}_${wTimeTo}`);
+        if (await uploadCSVToDune(`vependle_fee_${wTimeFrom}_${wTimeTo}`, arrayToCSVString(rewards))) {
+            console.log('CSV uploaded to Dune successfully.');
+        }
+        else {
+            throw new Error('Failed to upload CSV to Dune.');
+        }
+
+        console.log(`Data for week ${wTimeFrom}-${wTimeTo} uploaded successfully.`);
     }
 }
 

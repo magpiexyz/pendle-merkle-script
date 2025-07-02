@@ -11,6 +11,27 @@ export interface reward {
   totalVotingPower: string;
 }
 
+export async function loadFromS3(bucket: string, path: string) {
+    const s3 = new S3({ region: 'us-west-1' });
+
+    let jsonObject: any;
+
+    const params = {
+        Bucket: bucket,
+        Key: path
+    };
+
+    try {
+        const dataObject = await s3.getObject(params);
+        const dataContent = await dataObject.Body?.transformToString();
+        jsonObject = JSON.parse(dataContent || '{}');
+    } catch (error: unknown) {
+        jsonObject = null;
+    }
+
+    return jsonObject;
+}
+
 
 export async function uploadToS3(bucket: string, path: string, data: object): Promise<void> {
   const s3 = new S3({ region: 'us-west-1' });

@@ -1,0 +1,54 @@
+# .github/workflows/auto-reward-update.yml
+name: Auto Reward Data Update
+
+on:
+  workflow_run:
+    workflows: ["Sync Fork with Upstream"]
+    types:
+      - completed
+  
+  workflow_dispatch:
+
+jobs:
+  update-rewards:
+    runs-on: ubuntu-latest
+    
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'yarn'
+
+    - name: Install Dependencies
+      run: yarn install --frozen-lockfile
+
+    - name: Setup Environment Variables
+      run: |
+        echo "Setting up environment variables..."
+
+    - name: Run Reward Update Script
+      run: |
+        echo "🚀 Starting reward data update..."
+        yarn hardhat run scripts/main-penpie.ts
+        echo "✅ Reward data update completed"
+
+    - name: Check for Script Errors
+      if: failure()
+      run: |
+        echo "❌ Reward update script failed"
+        echo "Please check the logs above for error details"
+        exit 1
+
+    - name: Notify Success
+      if: success()
+      run: |
+        echo "🎉 Reward data has been successfully updated!"
+        echo "Data uploaded to S3 and Dune Analytics"
