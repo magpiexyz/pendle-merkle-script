@@ -14,8 +14,6 @@ export interface reward {
 export async function loadFromS3(bucket: string, path: string) {
     const s3 = new S3({ region: 'us-west-1' });
 
-    let jsonObject: any;
-
     const params = {
         Bucket: bucket,
         Key: path
@@ -24,12 +22,16 @@ export async function loadFromS3(bucket: string, path: string) {
     try {
         const dataObject = await s3.getObject(params);
         const dataContent = await dataObject.Body?.transformToString();
-        jsonObject = JSON.parse(dataContent || '{}');
-    } catch (error: unknown) {
-        jsonObject = null;
+        return JSON.parse(dataContent || '{}');
+    } catch (error: any) {
+        if (error.name === 'NoSuchKey' || error.$metadata?.httpStatusCode === 404) {
+            console.log(`File not found in S3: ${bucket}/${path}`);
+            return null;
+        }
+        
+        console.error(`Error loading from S3: ${bucket}/${path}`, error);
+        throw new Error(`Failed to load from S3: ${bucket}/${path}. ${error.message}`);
     }
-
-    return jsonObject;
 }
 
 
@@ -48,6 +50,7 @@ export async function uploadToS3(bucket: string, path: string, data: object): Pr
     console.log('Data successfully uploaded:', result);
   } catch (error) {
     console.error('Error uploading data:', error);
+    throw error;
   }
 }
 

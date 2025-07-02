@@ -30,9 +30,17 @@ jobs:
     - name: Install Dependencies
       run: yarn install --frozen-lockfile
 
-    - name: Setup Environment Variables
+    - name: Configure AWS Credentials via OIDC
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: arn:aws:iam::784497868863:role/pendle-merkle-updater
+        aws-region: us-west-1
+        role-session-name: GitHubActions-RewardUpdate
+
+    - name: Verify AWS Configuration
       run: |
-        echo "Setting up environment variables..."
+        echo "✅ AWS credentials configured via OIDC"
+        aws sts get-caller-identity
 
     - name: Run Reward Update Script
       run: |
