@@ -1,5 +1,5 @@
-# .github/workflows/custom-sync.yml
-name: Custom Fork Sync
+# .github/workflows/auto-sync.yml
+name: Auto Sync from Pendle
 
 on:
   schedule:
