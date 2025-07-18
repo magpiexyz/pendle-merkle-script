@@ -3,7 +3,7 @@ name: Auto Reward Data Update
 
 on:
   workflow_run:
-    workflows: ["Sync Fork with Upstream"]
+    workflows: ["Auto Sync from Pendle"]
     types:
       - completed
   
