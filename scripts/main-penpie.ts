@@ -78,6 +78,18 @@ async function main() {
 
     if (existedData !== null) {
         console.log(`Data for week ${wTimeFrom}-${wTimeTo} already exists. Skipping upload.`);
+
+        // Output summary for skipped upload
+        const summary = {
+            success: true,
+            skipped: true,
+            weekRange: `${wTimeFrom}-${wTimeTo}`,
+            totalReward: sumReward.toString(),
+            baseReward: sumBaseReward.toString(),
+            rewardCount: rewards.length,
+            timestamp: new Date().toISOString()
+        };
+        console.log('REWARD_SUMMARY_JSON=' + JSON.stringify(summary));
     } else {
         // Export JSON to S3
         const jsonData = { sumReward: sumReward.toString(), sumBaseReward: sumBaseReward.toString(), rewards };
@@ -97,6 +109,17 @@ async function main() {
         }
 
         console.log(`Data for week ${wTimeFrom}-${wTimeTo} uploaded successfully.`);
+
+        // Output summary for Telegram notification
+        const summary = {
+            success: true,
+            weekRange: `${wTimeFrom}-${wTimeTo}`,
+            totalReward: sumReward.toString(),
+            baseReward: sumBaseReward.toString(),
+            rewardCount: rewards.length,
+            timestamp: new Date().toISOString()
+        };
+        console.log('REWARD_SUMMARY_JSON=' + JSON.stringify(summary));
     }
 }
 
@@ -104,5 +127,12 @@ main()
     .then(() => process.exit(0))
     .catch((error) => {
         console.error(error);
+        // Output error summary for Telegram notification
+        const errorSummary = {
+            success: false,
+            error: error.message,
+            timestamp: new Date().toISOString()
+        };
+        console.log('REWARD_SUMMARY_JSON=' + JSON.stringify(errorSummary));
         process.exit(1);
     });
