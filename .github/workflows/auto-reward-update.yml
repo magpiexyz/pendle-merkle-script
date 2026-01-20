@@ -2,11 +2,20 @@
 name: Auto Reward Data Update
 
 on:
+  # Triggered when Pull App syncs upstream changes to main
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/data/**'
+
+  # Backup: triggered when Auto Sync workflow completes (if manually run)
   workflow_run:
     workflows: ["Auto Sync from Pendle"]
     types:
       - completed
-  
+
+  # Manual trigger
   workflow_dispatch:
 
 permissions:
@@ -16,8 +25,8 @@ permissions:
 jobs:
   update-rewards:
     runs-on: ubuntu-latest
-    
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     
     steps:
     - name: Checkout Repository
