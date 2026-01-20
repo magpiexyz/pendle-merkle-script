@@ -83,7 +83,7 @@ jobs:
           MESSAGE="${MESSAGE}Status: Script execution failed%0A"
           MESSAGE="${MESSAGE}Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')%0A%0A"
           MESSAGE="${MESSAGE}Please check <a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">GitHub Actions</a> for details.%0A%0A"
-          MESSAGE="${MESSAGE}cc @cl59821201 @alan_magpie"
+          MESSAGE="${MESSAGE}cc @cl59821201 @Kol520 @alan_magpie"
         else
           SUCCESS=$(echo "$SUMMARY" | jq -r '.success')
           SKIPPED=$(echo "$SUMMARY" | jq -r '.skipped // false')
@@ -114,7 +114,7 @@ jobs:
             MESSAGE="${MESSAGE}⏰ Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')%0A%0A"
             MESSAGE="${MESSAGE}ℹ️ Data already exists in S3 - no upload needed%0A%0A"
             MESSAGE="${MESSAGE}<a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Workflow</a>%0A%0A"
-            MESSAGE="${MESSAGE}cc @cl59821201 @alan_magpie"
+            MESSAGE="${MESSAGE}cc @cl59821201 @Kol520 @alan_magpie"
           elif [ "$SUCCESS" = "true" ]; then
             # Success notification (new upload)
             WEEK_RANGE=$(echo "$SUMMARY" | jq -r '.weekRange')
@@ -142,7 +142,7 @@ jobs:
             MESSAGE="${MESSAGE}✓ Data uploaded to S3%0A"
             MESSAGE="${MESSAGE}✓ Data uploaded to Dune Analytics%0A%0A"
             MESSAGE="${MESSAGE}<a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Workflow</a>%0A%0A"
-            MESSAGE="${MESSAGE}cc @cl59821201 @alan_magpie"
+            MESSAGE="${MESSAGE}cc @cl59821201 @Kol520 @alan_magpie"
           else
             # Error notification
             ERROR_MSG=$(echo "$SUMMARY" | jq -r '.error')
@@ -151,7 +151,7 @@ jobs:
             MESSAGE="${MESSAGE}Error: ${ERROR_MSG}%0A"
             MESSAGE="${MESSAGE}Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')%0A%0A"
             MESSAGE="${MESSAGE}<a href=\"https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}\">View Logs</a>%0A%0A"
-            MESSAGE="${MESSAGE}cc @cl59821201 @alan_magpie"
+            MESSAGE="${MESSAGE}cc @cl59821201 @Kol520 @alan_magpie"
           fi
         fi
 
