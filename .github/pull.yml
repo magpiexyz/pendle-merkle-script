@@ -1,0 +1,7 @@
+version: "1"
+rules:
+  - base: main
+    upstream: pendle-finance:pendle-merkle-script:main
+    mergeMethod: merge
+    mergeUnstable: false
+    autoMerge: true
