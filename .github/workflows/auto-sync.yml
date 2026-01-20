@@ -1,9 +1,15 @@
 # .github/workflows/auto-sync.yml
+# NOTE: This workflow is now a backup mechanism.
+# Primary sync is handled by Pull App (https://github.com/apps/pull)
+# which triggers immediately when upstream updates.
+# This workflow can be manually triggered if Pull App fails.
+
 name: Auto Sync from Pendle
 
 on:
-  schedule:
-    - cron: '0 */6 * * 1,3,5'
+  # Disabled: Pull App now handles automatic syncing
+  # schedule:
+  #   - cron: '0 */6 * * 1,3,5'
   workflow_dispatch:
 
 permissions:

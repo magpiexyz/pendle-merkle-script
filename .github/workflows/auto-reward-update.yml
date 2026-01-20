@@ -2,11 +2,20 @@
 name: Auto Reward Data Update
 
 on:
+  # Triggered when Pull App syncs upstream changes to main
+  push:
+    branches:
+      - main
+    paths:
+      - 'scripts/data/**'
+
+  # Backup: triggered when Auto Sync workflow completes (if manually run)
   workflow_run:
     workflows: ["Auto Sync from Pendle"]
     types:
       - completed
-  
+
+  # Manual trigger
   workflow_dispatch:
 
 permissions:
@@ -16,8 +25,8 @@ permissions:
 jobs:
   update-rewards:
     runs-on: ubuntu-latest
-    
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     
     steps:
     - name: Checkout Repository
@@ -73,7 +82,8 @@ jobs:
           MESSAGE="${MESSAGE}Workflow: Auto Reward Data Update%0A"
           MESSAGE="${MESSAGE}Status: Script execution failed%0A"
           MESSAGE="${MESSAGE}Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')%0A%0A"
-          MESSAGE="${MESSAGE}Please check [GitHub Actions](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details."
+          MESSAGE="${MESSAGE}Please check [GitHub Actions](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.%0A%0A"
+          MESSAGE="${MESSAGE}cc @cl59821201 @alan_magpie"
         else
           SUCCESS=$(echo "$SUMMARY" | jq -r '.success')
           SKIPPED=$(echo "$SUMMARY" | jq -r '.skipped // false')
@@ -96,7 +106,8 @@ jobs:
             MESSAGE="${MESSAGE}📊 Reward Entries: ${REWARD_COUNT}%0A"
             MESSAGE="${MESSAGE}⏰ Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')%0A%0A"
             MESSAGE="${MESSAGE}ℹ️ Data already exists in S3 - no upload needed%0A%0A"
-            MESSAGE="${MESSAGE}[View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            MESSAGE="${MESSAGE}[View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})%0A%0A"
+            MESSAGE="${MESSAGE}cc @cl59821201 @alan_magpie"
           elif [ "$SUCCESS" = "true" ]; then
             # Success notification (new upload)
             WEEK_RANGE=$(echo "$SUMMARY" | jq -r '.weekRange')
@@ -116,7 +127,8 @@ jobs:
             MESSAGE="${MESSAGE}⏰ Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')%0A%0A"
             MESSAGE="${MESSAGE}✓ Data uploaded to S3%0A"
             MESSAGE="${MESSAGE}✓ Data uploaded to Dune Analytics%0A%0A"
-            MESSAGE="${MESSAGE}[View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            MESSAGE="${MESSAGE}[View Workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})%0A%0A"
+            MESSAGE="${MESSAGE}cc @cl59821201 @alan_magpie"
           else
             # Error notification
             ERROR_MSG=$(echo "$SUMMARY" | jq -r '.error')
@@ -124,7 +136,8 @@ jobs:
             MESSAGE="❌ *Pendle Reward Update Failed*%0A%0A"
             MESSAGE="${MESSAGE}Error: ${ERROR_MSG}%0A"
             MESSAGE="${MESSAGE}Time: $(date -u '+%Y-%m-%d %H:%M:%S UTC')%0A%0A"
-            MESSAGE="${MESSAGE}[View Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+            MESSAGE="${MESSAGE}[View Logs](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }})%0A%0A"
+            MESSAGE="${MESSAGE}cc @cl59821201 @alan_magpie"
           fi
         fi
 
