@@ -95,12 +95,19 @@ jobs:
             BASE_REWARD=$(echo "$SUMMARY" | jq -r '.baseReward')
             REWARD_COUNT=$(echo "$SUMMARY" | jq -r '.rewardCount')
 
+            # Convert timestamps to yyyy-mm-dd format
+            START_TS=$(echo "$WEEK_RANGE" | cut -d'-' -f1)
+            END_TS=$(echo "$WEEK_RANGE" | cut -d'-' -f2)
+            START_DATE=$(date -u -d "@$START_TS" '+%Y-%m-%d')
+            END_DATE=$(date -u -d "@$END_TS" '+%Y-%m-%d')
+            WEEK_RANGE_FORMATTED="${START_DATE} ~ ${END_DATE}"
+
             # Format rewards (PENDLE uses 6 decimals)
             TOTAL_FORMATTED=$(echo "scale=4; $TOTAL_REWARD / 1000000" | bc)
             BASE_FORMATTED=$(echo "scale=4; $BASE_REWARD / 1000000" | bc)
 
             MESSAGE="ℹ️ <b>Pendle Reward Update Skipped</b>%0A%0A"
-            MESSAGE="${MESSAGE}📅 Week Range: <code>${WEEK_RANGE}</code>%0A"
+            MESSAGE="${MESSAGE}📅 Week Range: <code>${WEEK_RANGE_FORMATTED}</code>%0A"
             MESSAGE="${MESSAGE}💰 Total Reward: ${TOTAL_FORMATTED} tokens%0A"
             MESSAGE="${MESSAGE}🎯 Base Reward: ${BASE_FORMATTED} tokens%0A"
             MESSAGE="${MESSAGE}📊 Reward Entries: ${REWARD_COUNT}%0A"
@@ -115,12 +122,19 @@ jobs:
             BASE_REWARD=$(echo "$SUMMARY" | jq -r '.baseReward')
             REWARD_COUNT=$(echo "$SUMMARY" | jq -r '.rewardCount')
 
+            # Convert timestamps to yyyy-mm-dd format
+            START_TS=$(echo "$WEEK_RANGE" | cut -d'-' -f1)
+            END_TS=$(echo "$WEEK_RANGE" | cut -d'-' -f2)
+            START_DATE=$(date -u -d "@$START_TS" '+%Y-%m-%d')
+            END_DATE=$(date -u -d "@$END_TS" '+%Y-%m-%d')
+            WEEK_RANGE_FORMATTED="${START_DATE} ~ ${END_DATE}"
+
             # Format rewards (PENDLE uses 6 decimals)
             TOTAL_FORMATTED=$(echo "scale=4; $TOTAL_REWARD / 1000000" | bc)
             BASE_FORMATTED=$(echo "scale=4; $BASE_REWARD / 1000000" | bc)
 
             MESSAGE="✅ <b>Pendle Reward Update Successful</b>%0A%0A"
-            MESSAGE="${MESSAGE}📅 Week Range: <code>${WEEK_RANGE}</code>%0A"
+            MESSAGE="${MESSAGE}📅 Week Range: <code>${WEEK_RANGE_FORMATTED}</code>%0A"
             MESSAGE="${MESSAGE}💰 Total Reward: ${TOTAL_FORMATTED} tokens%0A"
             MESSAGE="${MESSAGE}🎯 Base Reward: ${BASE_FORMATTED} tokens%0A"
             MESSAGE="${MESSAGE}📊 Reward Entries: ${REWARD_COUNT}%0A"
